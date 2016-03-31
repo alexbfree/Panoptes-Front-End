@@ -5,12 +5,11 @@ module?.exports = React.createClass
 
   getTotalSubjectCountForAllActiveWorkflows: (project) ->
     project.get('workflows', active: true).then (workflows) =>
-      count = 0
-      if workflows.length > 0
-        for workflow in workflows
-          count += workflow.subjects_count
-      console.log 'Total Active Subjects: ' + count
-      count
+      count = workflows
+                .reduce (a, b) ->
+                  a.subjects_count + b.subjects_count
+                .subjects_count
+      console.log 'Total Active Subjects: ', count
     project.subjects_count # until we have the accurate value, just display the total existing subjects
 
   propTypes:
