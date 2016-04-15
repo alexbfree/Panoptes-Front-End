@@ -67,6 +67,10 @@ module.exports =
         <Route path=":board" component={require './talk/board'} />
         <Route path=":board/:discussion" component={require './talk/discussion'} />
       </Route>
+      <Route path="collections" component={require('./pages/collections').CollectionsList}>
+        <IndexRoute component={require './pages/collections'}.CollectionsList} />
+        <Route path=":owner" component={require('./pages/collections').CollectionsList} />
+      </Route>
       <Route path="faq" component={require './pages/project/faq'} />
       <Route path="education" component={require './pages/project/education'} />
     </Route>
