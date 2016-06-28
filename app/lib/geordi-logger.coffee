@@ -14,6 +14,7 @@ class GeordiLogger # Make calls to the Geordi API to log user activity
     @geordi = @geordi || @makeGeordi @keys?.projectToken
 
   makeGeordi: (projectSlug) ->
+    console.log "making geordi with env=#{@state?.env}"
     new GeordiClient
       env: @state?.env
       projectToken: projectSlug || @keys?.projectToken

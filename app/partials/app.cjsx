@@ -32,6 +32,7 @@ PanoptesApp = React.createClass
     @setState user: user
 
   componentDidMount: ->
+    console.log "app-componentDidMount: env=#{@state?.env}"
     auth.listen 'change', @handleAuthChange
     generateSessionID()
     @handleAuthChange()
@@ -40,6 +41,7 @@ PanoptesApp = React.createClass
     auth.stopListening 'change', @handleAuthChange
 
   componentWillUpdate: (nextProps, nextState) ->
+    console.log "app-componentWillUpdate: env=#{nextState.env}"
     @geordiLogger = @geordiLogger || new GeordiLogger nextState
 
   handleAuthChange: ->
@@ -52,6 +54,7 @@ PanoptesApp = React.createClass
     <div className="panoptes-main">
       <IOStatus />
       {if @state.initialLoadComplete
+        console.log "app-initialLoadComplete: env=#{@state?.env}"
         <AppLayout user={@state.user}>
           {React.cloneElement @props.children, user: @state.user}
         </AppLayout>}
