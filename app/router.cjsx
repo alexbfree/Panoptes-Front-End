@@ -85,6 +85,7 @@ module.exports =
         <Route path=":board" component={require './talk/board'} />
         <Route path=":board/:discussion" component={require './talk/discussion'} />
       </Route>
+      <Route path="recent" component={require './pages/project/recent'} />
       <Route path="stats" component={require './pages/project/stats'} />
       <Route path="favorites" component={require('./pages/collections/index')}>
         <IndexRoute component={require('./pages/collections/favorites-list')} />
