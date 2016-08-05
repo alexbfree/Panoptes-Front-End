@@ -19,6 +19,7 @@ counterpart.registerTranslations 'en',
       classify: 'Classify'
       talk: 'Talk'
       collections: 'Collect'
+      recent: 'Recent'
 
 SOCIAL_ICONS =
   'bitbucket.com/': 'bitbucket'
@@ -189,14 +190,19 @@ ProjectPage = React.createClass
           <Translate content="project.nav.talk" />
         </Link>
 
+        <Link to="#{projectPath}/collections" activeClassName="active" className={collectClasses}>
+          <Translate content="project.nav.collections" />
+        </Link>
+
+        <Link to="#{projectPath}/recent" activeClassName="active" className="tabbed-content-tab" onClick={logClick?.bind this, 'project.nav.recent'}>
+          <Translate content="project.nav.recent" />
+        </Link>
+
         <NotificationsLink {...@props} linkProps={
           activeClassName: 'active',
           className: 'tabbed-content-tab',
           onClick: logClick?.bind(this, 'project.nav.notifications')
         } />
-         <Link to="#{projectPath}/collections" activeClassName="active" className={collectClasses}>
-          <Translate content="project.nav.collections" />
-        </Link>
 
         {@props.project.urls.map ({label, url}, i) =>
           unless !!label
