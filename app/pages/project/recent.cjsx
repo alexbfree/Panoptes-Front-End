@@ -49,7 +49,7 @@ RecentPage = React.createClass
     params =
       sort: '-created_at'
       page: page
-      page_size: 2
+      page_size: 10
       focus_type: "Subject"
       section: "project-#{ @props.project.id }"
     params
@@ -59,7 +59,7 @@ RecentPage = React.createClass
     params =
       sort: '-created_at'
       page: page
-      page_size: 2
+      page_size: 5
       section: "project-#{ @props.project.id }"
     params
 
@@ -100,23 +100,43 @@ RecentPage = React.createClass
         subject_comments_all_loaded = true
       @setState {subject_comments, subject_comments_page, subject_comments_loading, subject_comments_all_loaded}
 
-
   renderSubjectComment: (comment) ->
-    <span key={comment.id}>
-      <PromiseRenderer
-        promise={
-          apiClient.type('subjects').get(comment.focus_id)
-        }
-        then={(subject) =>
-          <Thumbnail src={getSubjectLocation(subject).src} width={100} />
-        }
-        catch={null}
-        />
-      <p>{timestamp(comment.created_at)}
+    baseURL = "/projects/#{@props.project.slug}"
+    baseTalkURL = "#{baseURL}/talk"
+    commentURL = "#{baseTalkURL}/#{comment.board_id}/#{comment.discussion_id}?comment=#{comment.id}"
+    subjectURL = "#{baseTalkURL}/subjects/#{comment.focus_id}"
+    <span className="subject-with-comment" key={comment.id}>
+      <a className="no-formatting" href="#{subjectURL}">
+        <PromiseRenderer
+          promise={
+            apiClient.type('subjects').get(comment.focus_id)
+          }
+          then={(subject) =>
+            <Thumbnail src={getSubjectLocation(subject).src} width={125} />
+          }
+          catch={null}
+          />
+      </a>
+      <p className="comment">
+        <span className="comment-body">
+          <a className="no-formatting" href="#{commentURL}">{comment.body}</a>
+        </span>
+        <span className="comment-name">
+          by <a href="#{baseURL}/users/#{comment.user_login}">{comment.user_display_name}</a>
+        </span>
+        <span className="comment-timestamp">
+          <a className="no-formatting" href="#{commentURL}">{timestamp(comment.created_at)}</a>
+        </span>
         {if comment.is_reply
-          <span>
-            {' '}(reply to comment {comment.reply_id})
-          </span>}: - {comment.body}
+          <span className="in-reply-to">
+            {' '}in reply to{' '}
+            <a href="#{baseURL}/users/#{comment.reply_user_login}" className="original-poster">
+              {comment.reply_user_display_name}
+            </a>{"'"}s
+            <a href="#{baseTalkURL}/comments/#{comment.reply_id}" className="original-comment-link">
+              comment
+            </a>
+          </span>}
       </p>
     </span>
 
@@ -132,7 +152,7 @@ RecentPage = React.createClass
     params =
       sort: '-created_at'
       page: page
-      page_size: 1
+      page_size: 3
       project_ids: @props.project.id
       include:'owner'
       favorite: false
@@ -172,24 +192,26 @@ RecentPage = React.createClass
          <div className="recent-comments-page-body">
             <div className="left-col col">
               <div className="col-section-top col-section">
-                <h1>Subject based posts</h1>
-                <div className="talk-discussion-comments">
+                <h1>Subject comments</h1>
+                <div className="paginator">
+                  <button
+                    className="paginator-next"
+                    onClick={@getMoreSubjectComments}
+                    disabled={@state.subject_comments_all_loaded}>
+                    Load more...
+                  </button>
+                </div>
+                <div className="subject-posts-container">
                   {if @state.subject_comments_loading
                     <Loading />
                   else
                     if @state.subject_comments.length == 0
-                      <p className="nothing-found">No Subject based posts found.</p>
+                      <p className="nothing-found">No subject comments.</p>
                     else
                       <span>
-                        {@state.subject_comments.map @renderSubjectComment}
-                        <div className="paginator">
-                          <button
-                            className="paginator-next"
-                            onClick={@getMoreSubjectComments}
-                            disabled={@state.subject_comments_all_loaded}>
-                            Load more...
-                          </button>
-                        </div>
+                        <span className="subjects-with-comments">
+                          {@state.subject_comments.map @renderSubjectComment}
+                        </span>
                       </span>}
                 </div>
               </div>

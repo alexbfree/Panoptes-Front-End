@@ -83,12 +83,49 @@
     line-height: 1.5
     margin: 0 3vw
 
-.project-recent-content
-  .recent-comments-page-body
-    display: flex
-    flex-direction: row
-    align-content: space-between
-    justify-content: space-between
+    .recent-comments-page-body
+      display: flex
+      flex-direction: row
+      align-content: space-between
+      justify-content: space-between
 
-    .right-col
-      max-width: 40%
+      .left-col
+        width: 100%
+
+      .right-col
+        max-width: 40%
+
+    .subject-with-comment
+      display: inline-block
+      background-color: BACKGROUND
+      margin: 10px
+      padding: 10px
+      max-width: 150px
+      border-radius: 5px
+
+      p.comment
+        padding-top: 0.5em
+        padding-bottom: 0
+
+        a.no-formatting
+          text-decoration: none
+          color: FOREGROUND
+
+        .comment-body::before
+          content: open-quote
+
+        .comment-body::after
+          content: " ..." close-quote
+        .comment-body
+          height: 3.9em
+          overflow: hidden
+          display: block
+          text-overflow: ellipsis
+          line-height: 1.3em
+          max-height: 3.9em
+
+        .comment-timestamp
+          font-style: italic
+          font-size: 11px
+          display: block
+          margin-top: 10px
