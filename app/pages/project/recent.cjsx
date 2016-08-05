@@ -15,41 +15,44 @@ RecentPage = React.createClass
   displayName: 'ProjectRecent'
 
   componentDidMount: ->
-    @getFirstComments()
+    @getMoreTextComments()
+    @getMoreSubjectComments()
 
   getInitialState: ->
-    subject_notes: []
-    discussion_posts: []
-    subject_notes_page: 1
-    discussion_posts_page: 1
+    subject_comments: []
+    text_comments: []
+    subject_comments_page: 1
+    text_comments_page: 1
+    text_comments_all_loaded: false
+    subject_comments_all_loaded: false
     loading: true
 
-  commentParams: (page) ->
+#  paramsForAllComments: (page = 1) ->
+#    params = sort: '-created_at', page: page
+#    params.page_size = 3
+#    params.subject_default = null
+#    params.section = "project-#{ @props.project.id }"
+#    params
+
+  paramsForSubjectComments: (page = 1) ->
     params = sort: '-created_at', page: page
-    params.page_size = 20
-    params.subject_default = null
+    params.page_size = 2
+    params.focus_type = "Subject"
     params.section = "project-#{ @props.project.id }"
     params
 
-  getFirstComments: (page = 1) ->
-    talkClient.type('comments').get(@commentParams(page)).then (comments) =>
-      loading = false
-      text_comments = []
-      subject_comments = []
-      for comment in comments
-        if not comment.is_deleted
-          if comment.focus_type is "Subject"
-            subject_comments.push comment
-          else
-            text_comments.push comment
-      @setState {subject_comments, text_comments, loading}
+  paramsForTextComments: (page = 1) ->
+    params = sort: '-created_at', page: page
+    params.page_size = 2
+    # TODO add params.focus_id = ""
+    params.section = "project-#{ @props.project.id }"
+    params
 
-
-#  getMoreSubjectComments: (page = 1) ->
-#    talkClient.type('comments').get(@commentParams(page)).then (comments) =>
+#  getFirstComments: ->
+#    talkClient.type('comments').get(@paramsForAllComments(1)).then (comments) =>
 #      loading = false
-#      subject_notes = []
-#      discussion_posts = []
+#      text_comments = []
+#      subject_comments = []
 #      for comment in comments
 #        if not comment.is_deleted
 #          if comment.focus_type is "Subject"
@@ -57,6 +60,34 @@ RecentPage = React.createClass
 #          else
 #            text_comments.push comment
 #      @setState {subject_comments, text_comments, loading}
+
+  getMoreTextComments: ->
+    text_comments_page = @state.text_comments_page + 1
+    params = @paramsForTextComments(text_comments_page)
+    talkClient.type('comments').get(params).then (comments) =>
+      loading = false
+      text_comments = @state.text_comments
+      for comment in comments
+        if not comment.is_deleted
+          if comment.focus_id is ""
+            text_comments.push comment
+      if meta?.next_page is null
+        text_comments_all_loaded = true
+      @setState {text_comments, text_comments_page, text_comments_all_loaded, loading}
+
+  getMoreSubjectComments: ->
+    subject_comments_page = @state.subject_comments_page + 1
+    params = @paramsForSubjectComments(subject_comments_page)
+    talkClient.type('comments').get(params).then (comments) =>
+      meta = comments[0]?.getMeta() or { }
+      loading = false
+      subject_comments = @state.subject_comments
+      for comment in comments
+        if not comment.is_deleted
+          subject_comments.push comment
+      if meta?.next_page is null
+        subject_comments_all_loaded = true
+      @setState {subject_comments, subject_comments_page, loading, subject_comments_all_loaded}
 
   renderSubjectComment: (comment) ->
     <pre key={comment.id}>Comment {comment.id} at {timestamp(comment.created_at)}
@@ -100,10 +131,26 @@ RecentPage = React.createClass
               <h1>Text based posts</h1>
               <div className="talk-discussion-comments">
                 {@state.text_comments.map @renderTextComment}
+                <div className="paginator">
+                  <button
+                    className="paginator-next"
+                    onClick={@getMoreTextComments}
+                    disabled={@state.text_comments_all_loaded}>
+                    Load more...
+                  </button>
+                </div>
               </div>
               <h1>Subject based posts</h1>
               <div className="talk-discussion-comments">
                 {@state.subject_comments.map @renderSubjectComment}
+                <div className="paginator">
+                  <button
+                    className="paginator-next"
+                    onClick={@getMoreSubjectComments}
+                    disabled={@state.subject_comments_all_loaded}>
+                    Load more...
+                  </button>
+                </div>
               </div>
             </div>}
         </div>
