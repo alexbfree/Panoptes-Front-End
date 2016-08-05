@@ -1,11 +1,15 @@
 counterpart = require 'counterpart'
 React = require 'react'
 talkClient = require 'panoptes-client/lib/talk-client'
+apiClient = require 'panoptes-client/lib/api-client'
 {Link} = require 'react-router'
 Translate = require 'react-translate-component'
 Comment = require '../../talk/comment'
 Loading = require '../../components/loading-indicator'
 {timestamp} = require '../../talk/lib/time'
+getSubjectLocation = require '../../lib/get-subject-location'
+Thumbnail = require '../../components/thumbnail'
+PromiseRenderer = require '../../components/promise-renderer'
 
 counterpart.registerTranslations 'en',
   recentPage:
@@ -48,19 +52,6 @@ RecentPage = React.createClass
     params.section = "project-#{ @props.project.id }"
     params
 
-#  getFirstComments: ->
-#    talkClient.type('comments').get(@paramsForAllComments(1)).then (comments) =>
-#      loading = false
-#      text_comments = []
-#      subject_comments = []
-#      for comment in comments
-#        if not comment.is_deleted
-#          if comment.focus_type is "Subject"
-#            subject_comments.push comment
-#          else
-#            text_comments.push comment
-#      @setState {subject_comments, text_comments, loading}
-
   getMoreTextComments: ->
     text_comments_page = @state.text_comments_page + 1
     text_comments = @state.text_comments
@@ -98,15 +89,26 @@ RecentPage = React.createClass
       @setState {subject_comments, subject_comments_page, loading, subject_comments_all_loaded}
 
   renderSubjectComment: (comment) ->
-    <pre key={comment.id}>Comment {comment.id} at {timestamp(comment.created_at)}
-      {if comment.is_reply
-        <span>
-          {' '}(reply to comment {comment.reply_id})
-        </span>}: - {comment.body}
-        <span>
-          {' '} about Subject {comment.focus_id}
-        </span>
-    </pre>
+    <span>
+      <PromiseRenderer
+        promise={
+          apiClient.type('subjects').get(comment.focus_id)
+        }
+        then={(subject) =>
+          <Thumbnail src={getSubjectLocation(subject).src} width={100} />
+        }
+        catch={null}
+        />
+      <pre key={comment.id}>Comment {comment.id} at {timestamp(comment.created_at)}
+        {if comment.is_reply
+          <span>
+            {' '}(reply to comment {comment.reply_id})
+          </span>}: - {comment.body}
+          <span>
+            {' '} about Subject {comment.focus_id}
+          </span>
+      </pre>
+    </span>
 
   renderTextComment: (comment) ->
     <pre key={comment.id}>Comment {comment.id} at {timestamp(comment.created_at)}
