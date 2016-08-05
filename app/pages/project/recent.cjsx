@@ -112,27 +112,21 @@ RecentPage = React.createClass
         }
         catch={null}
         />
-      <pre>{timestamp(comment.created_at)}
+      <p>{timestamp(comment.created_at)}
         {if comment.is_reply
           <span>
             {' '}(reply to comment {comment.reply_id})
           </span>}: - {comment.body}
-      </pre>
+      </p>
     </span>
 
   renderTextComment: (comment) ->
-    <pre key={comment.id}>{timestamp(comment.created_at)}
+    <p key={comment.id}>{timestamp(comment.created_at)}
       {if comment.is_reply
         <span>
           {' '}(reply to comment {comment.reply_id})
         </span>}: - {comment.body}
-    </pre>
-
-  renderComment: (comment) ->
-    if comment.focus_id
-      @renderSubjectComment comment
-    else
-      @renderTextComment comment
+    </p>
 
   paramsForCollections: (page = 1) ->
     params =
@@ -180,28 +174,6 @@ RecentPage = React.createClass
           </h1>
             <div className="recent-comments-page-body">
               <div className="left-col col">
-                <h1>Text based posts</h1>
-                <div className="talk-discussion-comments">
-                  {if @state.text_comments_loading
-                    <Loading />
-                  else
-                    if @state.text_comments.length == 0
-                      <p className="nothing-found">No Text based posts found.</p>
-                    else
-                      <span>
-                        {@state.text_comments.map @renderTextComment}
-                        <div className="paginator">
-                          <button
-                            className="paginator-next"
-                            onClick={@getMoreTextComments}
-                            disabled={@state.text_comments_all_loaded}>
-                            Load more...
-                          </button>
-                        </div>
-                      </span>}
-                </div>
-              </div>
-              <div className="right-col col">
                 <div className="col-section-top col-section">
                   <h1>Subject based posts</h1>
                   <div className="talk-discussion-comments">
@@ -224,6 +196,31 @@ RecentPage = React.createClass
                         </span>}
                   </div>
                 </div>
+              </div>
+              <div className="right-col col">
+                <div className="col-section-top col-section">
+                  <h1>Text based posts</h1>
+                  <div className="talk-discussion-comments">
+                    {if @state.text_comments_loading
+                      <Loading />
+                    else
+                      if @state.text_comments.length == 0
+                        <p className="nothing-found">No Text based posts found.</p>
+                      else
+                        <span>
+                          {@state.text_comments.map @renderTextComment}
+                          <div className="paginator">
+                            <button
+                              className="paginator-next"
+                              onClick={@getMoreTextComments}
+                              disabled={@state.text_comments_all_loaded}>
+                              Load more...
+                            </button>
+                          </div>
+                        </span>}
+                  </div>
+                </div>
+                <hr />
                 <div className="col-section-bottom col-section">
                   <h1>Collections</h1>
                   <div className="recent-collections">
