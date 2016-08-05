@@ -11,10 +11,11 @@ getSubjectLocation = require '../../lib/get-subject-location'
 Thumbnail = require '../../components/thumbnail'
 PromiseRenderer = require '../../components/promise-renderer'
 CollectionPreview = require '../../collections/preview'
+classNames = require 'classnames'
 
 counterpart.registerTranslations 'en',
   recentPage:
-    title: 'Recent Updates'
+    title: 'Recent Updates on %(projectName)s'
 
 RecentPage = React.createClass
   displayName: 'ProjectRecent'
@@ -23,6 +24,12 @@ RecentPage = React.createClass
     @getMoreTextComments()
     @getMoreSubjectComments()
     @getMoreCollections()
+    if @props.project?
+      document.documentElement.classList.add 'on-secondary-page'
+
+  componentWillUnmount: ->
+    if @props.project?
+      document.documentElement.classList.remove 'on-secondary-page'
 
   getInitialState: ->
     subject_comments: []
@@ -105,19 +112,16 @@ RecentPage = React.createClass
         }
         catch={null}
         />
-      <pre>Comment {comment.id} at {timestamp(comment.created_at)}
+      <pre>{timestamp(comment.created_at)}
         {if comment.is_reply
           <span>
             {' '}(reply to comment {comment.reply_id})
           </span>}: - {comment.body}
-          <span>
-            {' '} about Subject {comment.focus_id}
-          </span>
       </pre>
     </span>
 
   renderTextComment: (comment) ->
-    <pre key={comment.id}>Comment {comment.id} at {timestamp(comment.created_at)}
+    <pre key={comment.id}>{timestamp(comment.created_at)}
       {if comment.is_reply
         <span>
           {' '}(reply to comment {comment.reply_id})
@@ -158,12 +162,19 @@ RecentPage = React.createClass
     <CollectionPreview project={@props.project} key={"collection-#{ collection.id }"} collection={collection} />
 
   render: ->
-    <div className="secondary-page all-resources-page">
+    classes = classNames {
+      "secondary-page":true
+      "all-resources-page": true
+      "has-project-context": @props.project?
+    }
+    <div className={classes}>
       <section className="hero recent-hero">
         <div className="hero-container">
-          <Translate component="h1" content={"recentPage.title"} />
+          <Translate component="h1" content={"recentPage.title"} projectName={@props.project?.display_name}/>
         </div>
-        <div className="talk-recents">
+      </section>
+      <section className="project-recent-content project-text-content in-project-context">
+        <div className="project-recents resources-container">
           <h1 className="talk-page-header">
             Recent Comments {"on #{ @state.boardTitle or @props.project?.display_name}"}
           </h1>
