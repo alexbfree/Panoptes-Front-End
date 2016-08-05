@@ -155,7 +155,7 @@ RecentPage = React.createClass
       @setState {collections, collections_page, collections_loading, collections_all_loaded}
 
   renderCollection: (collection) ->
-    <CollectionPreview key={"collection-#{ collection.id }"} collection={collection} />
+    <CollectionPreview project={@props.project} key={"collection-#{ collection.id }"} collection={collection} />
 
   render: ->
     <div className="secondary-page all-resources-page">
