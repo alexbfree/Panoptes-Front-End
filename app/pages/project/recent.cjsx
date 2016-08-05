@@ -169,82 +169,79 @@ RecentPage = React.createClass
       </section>
       <section className="project-recent-content project-text-content in-project-context">
         <div className="project-recents resources-container">
-          <h1 className="talk-page-header">
-            Recent Comments {"on #{ @state.boardTitle or @props.project?.display_name}"}
-          </h1>
-            <div className="recent-comments-page-body">
-              <div className="left-col col">
-                <div className="col-section-top col-section">
-                  <h1>Subject based posts</h1>
-                  <div className="talk-discussion-comments">
-                    {if @state.subject_comments_loading
-                      <Loading />
+         <div className="recent-comments-page-body">
+            <div className="left-col col">
+              <div className="col-section-top col-section">
+                <h1>Subject based posts</h1>
+                <div className="talk-discussion-comments">
+                  {if @state.subject_comments_loading
+                    <Loading />
+                  else
+                    if @state.subject_comments.length == 0
+                      <p className="nothing-found">No Subject based posts found.</p>
                     else
-                      if @state.subject_comments.length == 0
-                        <p className="nothing-found">No Subject based posts found.</p>
-                      else
-                        <span>
-                          {@state.subject_comments.map @renderSubjectComment}
-                          <div className="paginator">
-                            <button
-                              className="paginator-next"
-                              onClick={@getMoreSubjectComments}
-                              disabled={@state.subject_comments_all_loaded}>
-                              Load more...
-                            </button>
-                          </div>
-                        </span>}
-                  </div>
-                </div>
-              </div>
-              <div className="right-col col">
-                <div className="col-section-top col-section">
-                  <h1>Text based posts</h1>
-                  <div className="talk-discussion-comments">
-                    {if @state.text_comments_loading
-                      <Loading />
-                    else
-                      if @state.text_comments.length == 0
-                        <p className="nothing-found">No Text based posts found.</p>
-                      else
-                        <span>
-                          {@state.text_comments.map @renderTextComment}
-                          <div className="paginator">
-                            <button
-                              className="paginator-next"
-                              onClick={@getMoreTextComments}
-                              disabled={@state.text_comments_all_loaded}>
-                              Load more...
-                            </button>
-                          </div>
-                        </span>}
-                  </div>
-                </div>
-                <hr />
-                <div className="col-section-bottom col-section">
-                  <h1>Collections</h1>
-                  <div className="recent-collections">
-                    {if @state.collections_loading
-                      <Loading />
-                    else
-                      if @state.collections.length == 0
-                        <p className="nothing-found">No collections found.</p>
-                      else
-                        <span>
-                          {@state.collections.map @renderCollection}
-                          <div className="paginator">
-                            <button
-                              className="paginator-next"
-                              onClick={@getMoreCollections}
-                              disabled={@state.collections_all_loaded}>
-                              Load more...
-                            </button>
-                          </div>
-                        </span>}
-                  </div>
+                      <span>
+                        {@state.subject_comments.map @renderSubjectComment}
+                        <div className="paginator">
+                          <button
+                            className="paginator-next"
+                            onClick={@getMoreSubjectComments}
+                            disabled={@state.subject_comments_all_loaded}>
+                            Load more...
+                          </button>
+                        </div>
+                      </span>}
                 </div>
               </div>
             </div>
+            <div className="right-col col">
+              <div className="col-section-top col-section">
+                <h1>Text based posts</h1>
+                <div className="talk-discussion-comments">
+                  {if @state.text_comments_loading
+                    <Loading />
+                  else
+                    if @state.text_comments.length == 0
+                      <p className="nothing-found">No Text based posts found.</p>
+                    else
+                      <span>
+                        {@state.text_comments.map @renderTextComment}
+                        <div className="paginator">
+                          <button
+                            className="paginator-next"
+                            onClick={@getMoreTextComments}
+                            disabled={@state.text_comments_all_loaded}>
+                            Load more...
+                          </button>
+                        </div>
+                      </span>}
+                </div>
+              </div>
+              <hr />
+              <div className="col-section-bottom col-section">
+                <h1>Collections</h1>
+                <div className="recent-collections">
+                  {if @state.collections_loading
+                    <Loading />
+                  else
+                    if @state.collections.length == 0
+                      <p className="nothing-found">No collections found.</p>
+                    else
+                      <span>
+                        {@state.collections.map @renderCollection}
+                        <div className="paginator">
+                          <button
+                            className="paginator-next"
+                            onClick={@getMoreCollections}
+                            disabled={@state.collections_all_loaded}>
+                            Load more...
+                          </button>
+                        </div>
+                      </span>}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
