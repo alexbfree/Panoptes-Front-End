@@ -63,23 +63,31 @@ RecentPage = React.createClass
 
   getMoreTextComments: ->
     text_comments_page = @state.text_comments_page + 1
+    text_comments = @state.text_comments
+    text_comments_all_loaded = @state.text_comments_all_loaded
+    previous_text_comments_length = text_comments.length
     params = @paramsForTextComments(text_comments_page)
     talkClient.type('comments').get(params).then (comments) =>
+      meta = comments[0]?.getMeta() or { }
       loading = false
-      text_comments = @state.text_comments
+      newTC = 0
       for comment in comments
         if not comment.is_deleted
           if comment.focus_id is ""
+            newTC += 1
             text_comments.push comment
       if meta?.next_page is null
         text_comments_all_loaded = true
       @setState {text_comments, text_comments_page, text_comments_all_loaded, loading}
+      if text_comments.length == previous_text_comments_length and not text_comments_all_loaded
+        # if none of the comments were text comments, go to next page (only if there is one)
+        @getMoreTextComments()
 
   getMoreSubjectComments: ->
     subject_comments_page = @state.subject_comments_page + 1
     params = @paramsForSubjectComments(subject_comments_page)
+    subject_comments_all_loaded = @state.subject_comments_all_loaded
     talkClient.type('comments').get(params).then (comments) =>
-      meta = comments[0]?.getMeta() or { }
       loading = false
       subject_comments = @state.subject_comments
       for comment in comments
@@ -130,27 +138,38 @@ RecentPage = React.createClass
             <div>
               <h1>Text based posts</h1>
               <div className="talk-discussion-comments">
-                {@state.text_comments.map @renderTextComment}
-                <div className="paginator">
-                  <button
-                    className="paginator-next"
-                    onClick={@getMoreTextComments}
-                    disabled={@state.text_comments_all_loaded}>
-                    Load more...
-                  </button>
-                </div>
+                {if @state.text_comments.length == 0
+                  <p className="no-comments-found">No Text based posts found.</p>
+                else
+                  <span>
+                    {@state.text_comments.map @renderTextComment}
+                    <div className="paginator">
+                      <button
+                        className="paginator-next"
+                        onClick={@getMoreTextComments}
+                        disabled={@state.text_comments_all_loaded}>
+                        Load more...
+                      </button>
+                    </div>
+                  </span>}
+
               </div>
               <h1>Subject based posts</h1>
               <div className="talk-discussion-comments">
-                {@state.subject_comments.map @renderSubjectComment}
-                <div className="paginator">
-                  <button
-                    className="paginator-next"
-                    onClick={@getMoreSubjectComments}
-                    disabled={@state.subject_comments_all_loaded}>
-                    Load more...
-                  </button>
-                </div>
+                {if @state.subject_comments.length == 0
+                  <p className="no-comments-found">No Subject based posts found.</p>
+                else
+                  <span>
+                    {@state.subject_comments.map @renderSubjectComment}
+                    <div className="paginator">
+                      <button
+                        className="paginator-next"
+                        onClick={@getMoreSubjectComments}
+                        disabled={@state.subject_comments_all_loaded}>
+                        Load more...
+                      </button>
+                    </div>
+                  </span>}
               </div>
             </div>}
         </div>
