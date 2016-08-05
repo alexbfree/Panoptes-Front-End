@@ -112,7 +112,7 @@ RecentPage = React.createClass
             apiClient.type('subjects').get(comment.focus_id)
           }
           then={(subject) =>
-            <Thumbnail src={getSubjectLocation(subject).src} width={125} />
+            <Thumbnail src={getSubjectLocation(subject).src} width={125} height={125} />
           }
           catch={null}
           />
