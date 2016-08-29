@@ -14,6 +14,7 @@ MiniCourse = require '../../lib/mini-course'
 getWorkflowsInOrder = require '../../lib/get-workflows-in-order'
 `import CustomSignInPrompt from './custom-sign-in-prompt'`
 `import WorkflowAssignmentDialog from '../../components/workflow-assignment-dialog'`
+experimentsClient = require '../../lib/experiments-client'
 
 FAILED_CLASSIFICATION_QUEUE_NAME = 'failed-classifications'
 
@@ -277,7 +278,11 @@ module.exports = React.createClass
       .then @loadAnotherSubject()
 
   saveClassification: ->
-    @context.geordi?.logEvent type: 'classify'
+    if @context.geordi.keys["experiment"]?
+      experimentsClient.logExperimentState @context.geordi, interventionMonitor?.latestFromSugar, "classificationStart"
+    else
+      @context.geordi?.logEvent type: 'classify'
+
     classification = @state.classification
     console?.info 'Completed classification', classification
     savingClassification = if @state.demoMode
@@ -286,6 +291,13 @@ module.exports = React.createClass
       Promise.reject new Error 'Simulated failure of classification save'
     else
       classification.save()
+      .then (classification) =>
+        # after classification is saved, if we are in an experiment, save
+        experiment_name = experimentsClient.checkForExperiment(@props.project.slug)
+        if experiment_name?
+          experimentsClient.postDataToExperimentServer(experiment_name,@props.user.id,classification.metadata.session,"classification",classification.id)
+      , (error) =>
+        console.log error
 
     savingClassification
       .then (classification) =>
