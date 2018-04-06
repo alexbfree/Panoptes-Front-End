@@ -352,7 +352,10 @@ publicationCategories =
       date: "May 28, 2015"},
       {citation: "Snapshot Serengeti, high-frequency annotated camera trap images of 40 mammalian species in an African savanna, Swanson+ 2015."
       href: "http://www.nature.com/articles/sdata201526"
-      date: "June 9, 2015"}]
+      date: "June 9, 2015"},
+      {citation: "This Image Intentionally Left Blank: Mundane Images Increase Citizen Science Participation, Bowyer+ 2015."
+      href: "https://www.humancomputation.com/2015/papers/45_Paper.pdf"
+      date: "Nov 10, 2015"}]
     }
   ],
   # biology: [
